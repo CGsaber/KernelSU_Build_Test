@@ -189,3 +189,26 @@ jobs:
       with:
         name: AK3-Nameless-OPlus-SM8350(Chandu)-Unofficial-KSU_${{ env.KSUVER_1 }}-${{ env.BUILD_TIME }}
         path: kernel_workspace/AnyKernel3/*
+
+    - name: Compare final config with original and upload artifacts
+      run: |
+        echo -e "\033[1;34m== Step 1: Copy final built config ==\033[0m"
+        cp out/.config $GITHUB_WORKSPACE/built.config
+
+        echo -e "\033[1;34m== Step 2: Expand original defconfig into full config ==\033[0m"
+        make O=out ARCH=arm64 vendor/lahaina-qgki_defconfig
+        cp out/.config $GITHUB_WORKSPACE/original_expanded.config
+
+        echo -e "\033[1;34m== Step 3: Show diff between original and built config ==\033[0m"
+        diff --color=always -u $GITHUB_WORKSPACE/original_expanded.config $GITHUB_WORKSPACE/built.config || true
+
+        echo -e "\033[1;34m== Step 4: Save diff to file ==\033[0m"
+        diff -u $GITHUB_WORKSPACE/original_expanded.config $GITHUB_WORKSPACE/built.config > $GITHUB_WORKSPACE/config.diff || true
+    - name: Upload kernel config artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: kernel-configs-and-diff
+        path: |
+          ${{ github.workspace }}/built.config
+          ${{ github.workspace }}/original_expanded.config
+          ${{ github.workspace }}/config.diff
