@@ -193,6 +193,7 @@ jobs:
     - name: Compare final config with original and upload artifacts
       run: |
         echo -e "\033[1;34m== Step 1: Copy final built config ==\033[0m"
+        cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         cp out/.config $GITHUB_WORKSPACE/built.config
 
         echo -e "\033[1;34m== Step 2: Expand original defconfig into full config ==\033[0m"
@@ -204,6 +205,7 @@ jobs:
 
         echo -e "\033[1;34m== Step 4: Save diff to file ==\033[0m"
         diff -u $GITHUB_WORKSPACE/original_expanded.config $GITHUB_WORKSPACE/built.config > $GITHUB_WORKSPACE/config.diff || true
+
     - name: Upload kernel config artifacts
       uses: actions/upload-artifact@v4
       with:
