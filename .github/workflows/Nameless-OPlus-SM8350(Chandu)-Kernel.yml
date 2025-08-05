@@ -132,9 +132,11 @@ jobs:
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
         rm -rf KernelSU
         rm -rf drivers/kernelsu
-        curl -LSs "https://raw.githubusercontent.com/rsuntk/KernelSU/main/kernel/setup.sh" | bash -s main
-        KSU_VERSION_1=$(cd KernelSU && expr $(/usr/bin/git rev-list --count HEAD) + 10200)
+        curl -LSs "https://raw.githubusercontent.com/SukiSU-Ultra/SukiSU-Ultra/main/kernel/setup.sh" | bash -s nongki
+        KSU_VERSION_1=$(cd KernelSU && expr $(/usr/bin/git rev-list --count HEAD) + 10606)
         echo "KSUVER_1=$KSU_VERSION_1" >> $GITHUB_ENV
+        export KSU_VERSION_1=$KSU_VERSION_1
+        sed -i "s/DKSU_VERSION=12800/DKSU_VERSION=${KSU_VERSION_1}/" kernel/Makefile
 
     - name: Build kernel with rsuntk KernelSU
       run: |
@@ -180,14 +182,14 @@ jobs:
       if: env.CHECK_IMAGE_1 == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: Image-Unofficial-KSU_${{ env.KSUVER_1 }}
+        name: Image-sukisu-KSU_${{ env.KSUVER_1 }}
         path: kernel_workspace/android-kernel/out/arch/arm64/boot/Image
 
     - name: Upload AnyKernel3
       if: env.CHECK_IMAGE_1 == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: AK3-Nameless-OPlus-SM8350(Chandu)-Unofficial-KSU_${{ env.KSUVER_1 }}-${{ env.BUILD_TIME }}
+        name: AK3-Nameless-OPlus-SM8350(Chandu)-Sukisu-KSU_${{ env.KSUVER_1 }}-${{ env.BUILD_TIME }}
         path: kernel_workspace/AnyKernel3/*
 
     - name: Compare final config with original and upload artifacts
